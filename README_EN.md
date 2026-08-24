@@ -1,18 +1,18 @@
-# BiliPai <img src="docs/images/233娘.jpeg" height="80" align="center">
+# BiliPaiX <img src="docs/images/233娘.jpeg" height="80" align="center">
 
 <p align="center">
-  <strong>Native, Pure, Extensible — Redefining your Bilibili experience</strong>
+  <strong>Optimized fork of BiliPai — Native, Pure, Extensible Bilibili experience</strong>
 </p>
 
 <p align="center">
-  <sub>Last updated: 2026-08-23 · Current build: 0.2.3-beta.11 · Latest documented release: v0.2.3-beta.11</sub>
+  <sub>Last updated: 2026-08-24 · Based on BiliPai 0.2.3-beta.11 · See <a href="README.md">简体中文</a></sub>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Release-0.2.3--beta.11-fb7299?style=flat-square" alt="Release">
-  <img src="https://img.shields.io/github/stars/jay3-yy/BiliPai?style=flat-square&color=yellow" alt="Stars">
-  <img src="https://img.shields.io/github/forks/jay3-yy/BiliPai?style=flat-square&color=green" alt="Forks">
-  <img src="https://img.shields.io/github/last-commit/jay3-yy/BiliPai?style=flat-square&color=purple" alt="Last Commit">
+  <img src="https://img.shields.io/github/stars/yangpeidong123/BiliPaiX?style=flat-square&color=yellow" alt="Stars">
+  <img src="https://img.shields.io/github/forks/yangpeidong123/BiliPaiX?style=flat-square&color=green" alt="Forks">
+  <img src="https://img.shields.io/github/last-commit/yangpeidong123/BiliPaiX?style=flat-square&color=purple" alt="Last Commit">
 </p>
 
 <p align="center">
