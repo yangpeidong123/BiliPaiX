@@ -197,7 +197,7 @@ class AppPrimitiveComponentsStructureTest {
         assertFalse(iconFacade.contains("import top.yukonga.miuix"))
 
         assertTrue(themeDefaults.contains("MaterialLocalTextStyle.current"))
-        assertTrue(themeDefaults.contains("MiuixLocalTextStyles.current.main"))
+        assertTrue(themeDefaults.contains("MiuixTheme.textStyles.main"))
         assertFalse(themeDefaults.contains(".kmp.basic."))
         assertTrue(materialText.contains("import androidx.compose.material3.Text"))
         assertTrue(materialIcon.contains("import androidx.compose.material3.Icon"))

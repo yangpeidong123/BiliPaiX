@@ -9,14 +9,14 @@ import androidx.compose.ui.text.TextStyle
 import com.android.purebilibili.core.theme.AppUiStyle
 import com.android.purebilibili.core.theme.LocalAppUiStyle
 import top.yukonga.miuix.kmp.theme.LocalContentColor as MiuixLocalContentColor
-import top.yukonga.miuix.kmp.theme.LocalTextStyles as MiuixLocalTextStyles
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 /** Theme-value bridge only; visible components remain isolated in renderer packages. */
 @Composable
 @ReadOnlyComposable
 internal fun currentAppTextStyle(): TextStyle = when (LocalAppUiStyle.current) {
     AppUiStyle.MATERIAL3 -> MaterialLocalTextStyle.current
-    AppUiStyle.MIUIX -> MiuixLocalTextStyles.current.main
+    AppUiStyle.MIUIX -> MiuixTheme.textStyles.main
 }
 
 /** Resolves the content color from the active native component tree. */
