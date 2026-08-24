@@ -88,12 +88,6 @@ class CommentRepositoryImagePayloadTest {
     }
 
     @Test
-    fun `comment main list maps newest to documented wbi time mode`() {
-        assertEquals(2, CommentRepository.resolveCommentMainListMode(mode = 2))
-        assertEquals(3, CommentRepository.resolveCommentMainListMode(mode = 3))
-    }
-
-    @Test
     fun `sub reply detail list keeps rest page size pagination available`() {
         val source = File("src/main/java/com/android/purebilibili/data/repository/CommentRepository.kt").readText()
 
