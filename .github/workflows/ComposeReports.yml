@@ -42,6 +42,13 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      # GitHub Packages (compose-miuix-ui/miuix) 认证：GPR_TOKEN secret 由仓库管理员配置
+      - name: Configure GitHub Packages credentials
+        run: |
+          mkdir -p ~/.gradle
+          echo "gpr.user=yangpeidong123" > ~/.gradle/gradle.properties
+          echo "gpr.key=${{ secrets.GPR_TOKEN }}" >> ~/.gradle/gradle.properties
+
       - name: Configure Firebase metadata
         run: echo "${{ secrets.FCM }}" | base64 -d > app/google-services.json
 
