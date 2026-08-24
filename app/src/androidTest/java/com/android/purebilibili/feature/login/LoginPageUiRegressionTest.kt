@@ -1,4 +1,4 @@
-package com.Android.purebilibili.feature.login
+package com.android.purebilibili.feature.login
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size

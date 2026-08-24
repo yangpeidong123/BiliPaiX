@@ -1,4 +1,4 @@
-package com.Android.purebilibili.feature.video
+package com.android.purebilibili.feature.video
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

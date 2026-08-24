@@ -1,4 +1,4 @@
-package com.Android.purebilibili.feature.video.ui.components
+package com.android.purebilibili.feature.video.ui.components
 
 import android.content.ClipDescription
 import android.content.ClipboardManager

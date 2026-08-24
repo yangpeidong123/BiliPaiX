@@ -1,4 +1,4 @@
-package com.Android.purebilibili
+package com.android.purebilibili
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

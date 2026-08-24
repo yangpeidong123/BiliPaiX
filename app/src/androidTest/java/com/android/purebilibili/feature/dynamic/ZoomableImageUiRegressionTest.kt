@@ -1,4 +1,4 @@
-package com.Android.purebilibili.feature.dynamic
+package com.android.purebilibili.feature.dynamic
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
