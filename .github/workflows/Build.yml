@@ -47,6 +47,10 @@ jobs:
       - name: Run source and policy guards
         run: |
           chmod +x gradlew
+          # GitHub Packages (compose-miuix-ui/miuix) 认证：GPR_TOKEN secret 由仓库管理员配置
+          mkdir -p ~/.gradle
+          echo "gpr.user=yangpeidong123" > ~/.gradle/gradle.properties
+          echo "gpr.key=${{ secrets.GPR_TOKEN }}" >> ~/.gradle/gradle.properties
           ./gradlew :app:testDebugUnitTest \
             --tests 'com.android.purebilibili.feature.settings.AppUpdateCheckerTest' \
             --tests 'com.android.purebilibili.feature.settings.AppVersionPolicyTest' \
@@ -115,6 +119,13 @@ jobs:
   
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
+
+      - name: Configure GitHub Packages credentials
+        run: |
+          # GitHub Packages (compose-miuix-ui/miuix) 认证：GPR_TOKEN secret 由仓库管理员配置
+          mkdir -p ~/.gradle
+          echo "gpr.user=yangpeidong123" > ~/.gradle/gradle.properties
+          echo "gpr.key=${{ secrets.GPR_TOKEN }}" >> ~/.gradle/gradle.properties
         
       - name: Set Up FCM Config
         run: |
