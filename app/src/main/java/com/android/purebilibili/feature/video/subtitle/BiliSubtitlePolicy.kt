@@ -583,9 +583,11 @@ fun resolveSubtitlePollingIntervalMs(
 }
 
 private const val SUBTITLE_PAUSED_POLL_INTERVAL_MS = 260L
-private const val SUBTITLE_NO_CUES_POLL_INTERVAL_MS = 400L
-private const val SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS = 300L
-private const val SUBTITLE_MIN_ACTIVE_POLL_INTERVAL_MS = 60L
+// internal：SubtitlePollingIntervalTest 需要直接断言各场景周期不变式
+internal const val SUBTITLE_NO_CUES_POLL_INTERVAL_MS = 400L
+// internal：SubtitlePollingIntervalTest 需要直接断言上下限不变式
+internal const val SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS = 300L
+internal const val SUBTITLE_MIN_ACTIVE_POLL_INTERVAL_MS = 60L
 private const val SUBTITLE_WAKE_MARGIN_MS = 40L
 
 /**
