@@ -48,6 +48,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.exoplayer.ExoPlayer
 import com.android.purebilibili.core.store.SettingsManager
 import com.android.purebilibili.core.ui.AppShapes
+import com.android.purebilibili.feature.video.subtitle.SubtitleExportFormatter
+import com.android.purebilibili.feature.video.subtitle.SubtitleFileExporter
 import com.android.purebilibili.core.ui.ContainerLevel
 import com.android.purebilibili.feature.video.subtitle.SubtitleDisplayMode
 import com.android.purebilibili.feature.video.subtitle.SubtitleTrackOption
@@ -394,6 +396,26 @@ fun PortraitSubtitleHost(
         }
 
         if (showSubtitlePanel) {
+            // 导出入口：仅主轨有 cue 时可用，导出当前主轨为 WebVTT
+            val onExportSubtitle: (() -> Unit)? = if (primaryCueAvailable) {
+                {
+                    val cues = success.subtitlePrimaryCues
+                    scope.launch {
+                        SubtitleFileExporter.exportSubtitle(
+                            context = context,
+                            fileName = "${pageBvid}_${pageCid}.vtt",
+                            content = SubtitleExportFormatter.formatSubtitles(
+                                cues,
+                                SubtitleExportFormatter.SubtitleExportFormat.WEBVTT,
+                                videoTitle = success.info.title,
+                            ),
+                            format = SubtitleExportFormatter.SubtitleExportFormat.WEBVTT,
+                        )
+                    }
+                }
+            } else {
+                null
+            }
             PortraitSubtitlePanel(
                 displayMode = displayMode,
                 primaryLabel = primaryLabel,
@@ -403,6 +425,7 @@ fun PortraitSubtitleHost(
                 trackOptions = trackOptions,
                 largeTextEnabled = largeTextEnabled,
                 canResetPosition = kotlin.math.abs(subtitleVerticalOffsetFraction) > 0.001f,
+                onExportSubtitle = onExportSubtitle,
                 onDismiss = { onShowSubtitlePanelChange(false) },
                 onDisplayModeChange = { mode ->
                     displayModePreference = mode
@@ -438,6 +461,7 @@ private fun PortraitSubtitlePanel(
     trackOptions: List<SubtitleTrackOption>,
     largeTextEnabled: Boolean,
     canResetPosition: Boolean = false,
+    onExportSubtitle: (() -> Unit)? = null,
     onDismiss: () -> Unit,
     onDisplayModeChange: (SubtitleDisplayMode) -> Unit,
     onTrackSelected: (String) -> Unit,
@@ -570,6 +594,25 @@ private fun PortraitSubtitlePanel(
                     ) {
                         AppText(
                             text = "重置位置",
+                            color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                        )
+                    }
+                }
+                if (onExportSubtitle != null) {
+                    AppSurface(
+                        onClick = {
+                            onExportSubtitle()
+                            onDismiss()
+                        },
+                        shape = AppShapes.container(ContainerLevel.Field),
+                        color = Color.White.copy(alpha = 0.10f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AppText(
+                            text = "导出字幕 (VTT)",
                             color = Color.White.copy(alpha = 0.9f),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
