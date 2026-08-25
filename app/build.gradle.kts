@@ -146,8 +146,31 @@ android {
         }
     }
 
+    signingConfigs {
+        create("ci") {
+            // CI 专用签名：由 Build.yml 解码 BILI_SIGNING_STORE_BASE64 secret 后注入。
+            // 本地无这些环境变量时本配置不生效，release 回退 debug 签名（fork 可构建）。
+            val storeFileEnv = System.getenv("BILI_SIGNING_STORE_FILE")
+            if (!storeFileEnv.isNullOrBlank() && file(storeFileEnv).exists()) {
+                storeType = "PKCS12"
+                storeFile = file(storeFileEnv)
+                storePassword = System.getenv("BILI_SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("BILI_SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("BILI_SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // 用户自有签名：密钥文件就绪时用 ci 配置，否则回退 debug 签名保证可安装可构建
+            val storeFileEnv = System.getenv("BILI_SIGNING_STORE_FILE")
+            val canCiSign = !storeFileEnv.isNullOrBlank() && file(storeFileEnv).exists()
+            signingConfig = if (canCiSign) {
+                signingConfigs.getByName("ci")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             // Disable PNG crunching to avoid AAPT errors
             isCrunchPngs = false
             buildConfigField("boolean", "ALLOW_HARDCODED_DNS_FALLBACK", "false")

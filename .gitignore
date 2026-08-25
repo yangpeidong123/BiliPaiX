@@ -111,3 +111,4 @@ docs/*
 # Local Reasonix session settings and metadata
 .reasonix/
 reasonix.toml
+ci-release-key.p12
