@@ -97,7 +97,7 @@ import com.android.purebilibili.core.store.SettingsManager
 import com.android.purebilibili.feature.video.screen.resolveVideoDetailSystemBarsVisibilityPolicy
 import com.android.purebilibili.core.store.player.PlayerSettingsStore
 import com.android.purebilibili.core.ui.adaptive.MotionTier
-import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.ui.adaptive.rememberDeviceUiProfile
 import com.android.purebilibili.core.ui.adaptive.resolveEffectiveMotionTier
 import com.android.purebilibili.core.util.ShareUtils
 import com.android.purebilibili.core.util.WindowWidthSizeClass
@@ -2660,11 +2660,7 @@ fun LandscapeEndDrawer(
             configuration.screenWidthDp.dp
         )
     }
-    val deviceUiProfile = remember(widthSizeClass) {
-        resolveDeviceUiProfile(
-            widthSizeClass = widthSizeClass
-        )
-    }
+    val deviceUiProfile = rememberDeviceUiProfile(widthSizeClass)
     val cardAnimationEnabled by SettingsManager
         .getCardAnimationEnabled(context)
         .collectAsStateWithLifecycle(initialValue = true

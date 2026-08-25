@@ -146,7 +146,7 @@ import com.android.purebilibili.data.model.response.VideoItem
 import com.android.purebilibili.core.util.FormatUtils
 import com.android.purebilibili.core.util.animateScrollToTop
 import com.android.purebilibili.core.util.shouldShowScrollToTop
-import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.ui.adaptive.rememberDeviceUiProfile
 import com.android.purebilibili.core.ui.adaptive.resolveEffectiveMotionTier
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -689,11 +689,7 @@ fun SearchScreen(
     )
     var scrollToTopSearchType by remember { mutableStateOf<SearchType?>(null) }
     var scrollToTopRequestId by remember { mutableIntStateOf(0) }
-    val deviceUiProfile = remember(windowSizeClass.widthSizeClass) {
-        resolveDeviceUiProfile(
-            widthSizeClass = windowSizeClass.widthSizeClass
-        )
-    }
+    val deviceUiProfile = rememberDeviceUiProfile(windowSizeClass.widthSizeClass)
     val cardAnimationEnabled by SettingsManager.getCardAnimationEnabled(context).collectAsStateWithLifecycle(initialValue = true)
     val homeDurationStyle by SettingsManager
         .getHomeDurationStyle(context)

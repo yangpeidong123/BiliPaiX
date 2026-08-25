@@ -8,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.purebilibili.core.ui.LocalAppThemeConfig
+import com.android.purebilibili.core.ui.adaptive.DevicePerformanceClass
+import com.android.purebilibili.core.ui.adaptive.LocalDevicePerformanceClass
 import com.android.purebilibili.core.ui.adaptive.MotionTier
 import com.android.purebilibili.core.ui.adaptive.RuntimeVisualGuardDecision
 import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
@@ -35,14 +37,18 @@ internal val LocalRuntimeVisualGuard = staticCompositionLocalOf<State<RuntimeVis
 @Composable
 internal fun ProvideRuntimeVisualGuard(
     widthSizeClass: WindowWidthSizeClass = LocalWindowSizeClass.current.widthSizeClass,
+    performanceClass: DevicePerformanceClass = LocalDevicePerformanceClass.current,
     guardEnabled: Boolean = LocalAppThemeConfig.current.runtimeVisualGuardEnabled,
     content: @Composable () -> Unit,
 ) {
     // 设备基线档位只能在拿到 window metrics 之后才知道，而 Tracker 是进程单例、
     // 在 Activity 之前就已加载。放在组合根注入还能让折叠屏展开/分屏自动跟随。
-    LaunchedEffect(widthSizeClass, guardEnabled) {
+    LaunchedEffect(widthSizeClass, guardEnabled, performanceClass) {
         AppRuntimeVisualGuardTracker.setBaseTier(
-            resolveDeviceUiProfile(widthSizeClass).motionTier
+            resolveDeviceUiProfile(
+                widthSizeClass = widthSizeClass,
+                performanceClass = performanceClass,
+            ).motionTier
         )
         AppRuntimeVisualGuardTracker.setEnabled(guardEnabled)
     }

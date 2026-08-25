@@ -51,7 +51,7 @@ import com.android.purebilibili.core.store.LONG_PRESS_SPEED_HINT_SCALE_MIN
 import com.android.purebilibili.core.store.LONG_PRESS_SPEED_HINT_STEP
 import com.android.purebilibili.core.store.player.DEFAULT_AUDIO_QUALITY_FOLLOW_LAST
 import com.android.purebilibili.core.store.player.PlayerSettingsStore
-import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.ui.adaptive.rememberDeviceUiProfile
 import com.android.purebilibili.core.store.BottomProgressBehavior
 import com.android.purebilibili.core.store.FullscreenAspectRatio
 import com.android.purebilibili.core.store.PlaybackCompletionBehavior
@@ -122,11 +122,7 @@ fun PlaybackSettingsContent(
     val warningTint = rememberAdaptiveSemanticIconTint(iOSOrange)
     val windowSizeClass = LocalWindowSizeClass.current
     // val state by viewModel.state.collectAsStateWithLifecycle() // Moved to parameter
-    val deviceUiProfile = remember(windowSizeClass.widthSizeClass) {
-        resolveDeviceUiProfile(
-            widthSizeClass = windowSizeClass.widthSizeClass
-        )
-    }
+    val deviceUiProfile = rememberDeviceUiProfile(windowSizeClass.widthSizeClass)
     LaunchedEffect(focusRequest?.token) {
         val request = focusRequest ?: return@LaunchedEffect
         val playbackFocusId = when (request.target) {

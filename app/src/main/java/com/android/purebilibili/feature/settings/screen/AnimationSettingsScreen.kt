@@ -40,7 +40,7 @@ import com.android.purebilibili.core.ui.AppAlertDialog
 import com.android.purebilibili.core.ui.AppDialogAction
 import com.android.purebilibili.core.ui.ContainerLevel
 import com.android.purebilibili.core.ui.adaptive.MotionTier
-import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.ui.adaptive.rememberDeviceUiProfile
 import com.android.purebilibili.core.ui.transition.VIDEO_SHARED_TRANSITION_CUSTOM_MAX_MILLIS
 import com.android.purebilibili.feature.settings.ui.SettingsPageScaffold
 import com.android.purebilibili.feature.settings.share.SettingsShareService
@@ -138,11 +138,7 @@ fun AnimationSettingsContent(
     val focusRequest by SettingsSearchFocusController.request.collectAsStateWithLifecycle()
     val windowSizeClass = LocalWindowSizeClass.current
     val warningTint = rememberAdaptiveSemanticIconTint(iOSOrange)
-    val deviceUiProfile = remember(windowSizeClass.widthSizeClass) {
-        resolveDeviceUiProfile(
-            widthSizeClass = windowSizeClass.widthSizeClass
-        )
-    }
+    val deviceUiProfile = rememberDeviceUiProfile(windowSizeClass.widthSizeClass)
     val cardMotionTier = resolveAnimationSettingsCardMotionTier(
         baseTier = deviceUiProfile.motionTier,
         cardAnimationEnabled = state.cardAnimationEnabled

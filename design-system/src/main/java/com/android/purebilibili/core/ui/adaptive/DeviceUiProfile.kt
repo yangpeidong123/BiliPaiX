@@ -15,12 +15,12 @@ data class DeviceUiProfileSpec(
 
 fun resolveDeviceUiProfileSpec(
     widthClass: AdaptiveWidthClass,
+    performanceClass: DevicePerformanceClass = DevicePerformanceClass.Standard,
 ): DeviceUiProfileSpec {
-    val motionTier = if (widthClass >= AdaptiveWidthClass.Expanded) {
-        MotionTier.Enhanced
-    } else {
-        MotionTier.Normal
-    }
+    val motionTier = resolveMotionTierForDevice(
+        widthClass = widthClass,
+        performanceClass = performanceClass,
+    )
 
     return DeviceUiProfileSpec(
         isTablet = widthClass != AdaptiveWidthClass.Compact,

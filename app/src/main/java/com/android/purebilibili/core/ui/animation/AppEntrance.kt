@@ -23,7 +23,7 @@ import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import com.android.purebilibili.core.ui.LocalAppThemeConfig
-import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.ui.adaptive.rememberDeviceUiProfile
 import com.android.purebilibili.core.ui.motion.EntranceMotionSpec
 import com.android.purebilibili.core.ui.motion.rememberSystemReduceMotion
 import com.android.purebilibili.core.ui.motion.resolveEffectiveEntranceMotionSpec
@@ -71,9 +71,7 @@ internal val LocalAppEntrance = staticCompositionLocalOf<AppEntranceController?>
 @Composable
 fun rememberEffectiveEntranceMotionSpec(): EntranceMotionSpec {
     val widthSizeClass = LocalWindowSizeClass.current.widthSizeClass
-    val deviceTier = remember(widthSizeClass) {
-        resolveDeviceUiProfile(widthSizeClass).motionTier
-    }
+    val deviceTier = rememberDeviceUiProfile(widthSizeClass).motionTier
     val appEnabled = LocalAppThemeConfig.current.uiEntranceAnimationEnabled
     val reduceMotion = rememberSystemReduceMotion()
     return remember(deviceTier, appEnabled, reduceMotion) {

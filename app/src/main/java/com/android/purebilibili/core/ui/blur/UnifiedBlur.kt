@@ -9,6 +9,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.Modifier
 import com.android.purebilibili.core.ui.LocalAppThemeConfig
+import com.android.purebilibili.core.ui.adaptive.DevicePerformanceClass
+import com.android.purebilibili.core.ui.adaptive.LocalDevicePerformanceClass
 import com.android.purebilibili.core.ui.adaptive.MotionTier
 import com.android.purebilibili.core.ui.adaptive.minMotionTier
 import com.android.purebilibili.core.ui.performance.LocalRuntimeVisualGuard
@@ -82,9 +84,21 @@ fun Modifier.unifiedBlur(
 
     // 运行时视觉守卫：连续掉帧时把毛玻璃/液态玻璃一并降级。调用点自带的
     // motionTier / forceLowBudget 语义正交，这里取更保守者而非覆盖。
+    // 设备性能档是第三个正交信号：低配设备从首帧起就用低 blur 预算，
+    // 不等守卫监测到掉帧才被动响应。
     val guard = LocalRuntimeVisualGuard.current.value
-    val effectiveMotionTier = minMotionTier(motionTier, guard.effectiveMotionTier)
-    val effectiveForceLowBudget = forceLowBudget || guard.forceLowBlurBudget
+    val devicePerformanceClass = LocalDevicePerformanceClass.current
+    val effectiveMotionTier = minMotionTier(
+        minMotionTier(motionTier, guard.effectiveMotionTier),
+        if (devicePerformanceClass == DevicePerformanceClass.Low) {
+            MotionTier.Reduced
+        } else {
+            motionTier
+        },
+    )
+    val effectiveForceLowBudget =
+        forceLowBudget || guard.forceLowBlurBudget ||
+            devicePerformanceClass == DevicePerformanceClass.Low
 
     val budget = remember(
         surfaceType,

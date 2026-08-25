@@ -83,7 +83,10 @@ import com.android.purebilibili.core.coroutines.AppScope
 import com.android.purebilibili.core.theme.LocalDisplayMetricsSnapshot
 import com.android.purebilibili.core.theme.PureBiliBiliTheme
 import com.android.purebilibili.core.ui.blur.rememberRecoverableHazeState
+import com.android.purebilibili.core.ui.adaptive.LocalDevicePerformanceClass
 import com.android.purebilibili.core.ui.motion.AppMotionEasing
+import com.android.purebilibili.core.performance.DevicePerformanceClass
+import com.android.purebilibili.core.performance.DevicePerformanceDetector
 import com.android.purebilibili.core.ui.performance.AppRuntimeVisualGuardTracker
 import com.android.purebilibili.core.ui.wallpaper.SplashWallpaperLayout
 import com.android.purebilibili.core.ui.wallpaper.resolveSplashWallpaperLayout
@@ -814,6 +817,12 @@ open class MainActivity : AppCompatActivity() {
     private val runtimeVisualGuardSession = Any()
     private var android17HandoffEnabled = false
 
+    /**
+     * 设备性能分档：onCreate 检测一次后全程不变（静态硬件属性），
+     * 经 [LocalDevicePerformanceClass] 下发，决定初始动效档与 blur 预算。
+     */
+    private var devicePerformanceClass: DevicePerformanceClass = DevicePerformanceClass.Standard
+
     var windowMetrics: WindowMetrics? by mutableStateOf(null)
 
     private fun currentPlaybackHandoffPayload(): PlaybackHandoffPayload? {
@@ -966,6 +975,10 @@ open class MainActivity : AppCompatActivity() {
         //  初始调用，后续会根据主题动态更新
         enableEdgeToEdge()
         AppWindowSystemUiController.configureEdgeToEdgeHost(this)
+
+        //  🎚️ [性能分级] 检测一次设备性能档，决定初始动效档位（低配主动降级，
+        //  不等运行时守卫监测到掉帧才被动响应）
+        devicePerformanceClass = DevicePerformanceDetector.detect(this)
         
         // 初始化小窗管理器
         miniPlayerManager = MiniPlayerManager.getInstance(this)
@@ -1376,6 +1389,7 @@ open class MainActivity : AppCompatActivity() {
                     CompositionLocalProvider(
                         LocalDensity provides effectiveDensity,
                         LocalWindowSizeClass provides windowSizeClass,
+                        LocalDevicePerformanceClass provides devicePerformanceClass,
                         LocalAppWindowAdaptiveInfo provides appWindowAdaptiveInfo,
                         LocalDisplayMetricsSnapshot provides displayMetricsSnapshot,
                         LocalAppSingleChoicePresentation provides
