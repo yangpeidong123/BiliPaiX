@@ -8,6 +8,8 @@ import com.android.purebilibili.core.ui.components.AppIcon
 import com.android.purebilibili.core.ui.components.AppText
 
 import com.android.purebilibili.core.ui.components.AppSegmentOption
+import com.android.purebilibili.core.store.motion.MotionTierOverride
+import com.android.purebilibili.core.store.motion.MotionTierOverrideStore
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -240,6 +242,15 @@ fun AnimationSettingsContent(
             AppSegmentOption(BiliPaiPredictiveBackExitDirection.ALWAYS_LEFT, "始终向左"),
         )
     }
+    val motionTierOverrideOptions = remember {
+        listOf(
+            AppSegmentOption(MotionTierOverride.Auto, "跟随设备"),
+            AppSegmentOption(MotionTierOverride.Smooth, "流畅优先"),
+            AppSegmentOption(MotionTierOverride.Standard, "标准动效"),
+        )
+    }
+    val motionTierOverride by MotionTierOverrideStore.observeOverride(context)
+        .collectAsStateWithLifecycle(initialValue = MotionTierOverride.Auto)
     var customTransitionDurationMillis by remember(state.videoSharedTransitionCustomDurationMillis) {
         mutableIntStateOf(state.videoSharedTransitionCustomDurationMillis)
     }
@@ -454,6 +465,27 @@ fun AnimationSettingsContent(
                             selectedValue = state.videoSharedTransitionSpeed,
                             onSelectionChange = viewModel::setVideoSharedTransitionSpeed
                         )
+                        AppPreferenceDivider()
+                        SettingsSingleChoicePreference(
+                            title = "动效等级",
+                            subtitle = when (motionTierOverride) {
+                                MotionTierOverride.Auto ->
+                                    "跟随设备性能自动调节（当前设备判定：$motionTierLabel）"
+                                MotionTierOverride.Smooth ->
+                                    "已锁定流畅优先：更短延迟与更弱位移，优先稳定和性能"
+                                MotionTierOverride.Standard ->
+                                    "已锁定标准动效：低配设备选择此项将以轻微卡顿风险换取完整动效"
+                            },
+                            options = motionTierOverrideOptions,
+                            selectedValue = motionTierOverride,
+                            onSelectionChange = { override ->
+                                scope.launch {
+                                    MotionTierOverrideStore.setOverride(context, override)
+                                }
+                            },
+                            iconTint = iOSTeal
+                        )
+                        AppPreferenceDivider()
                         if (state.videoSharedTransitionSpeed == VideoSharedTransitionSpeed.CUSTOM) {
                             AppPreferenceDivider()
                             AppSliderDialogPreference(

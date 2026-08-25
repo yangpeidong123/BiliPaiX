@@ -83,9 +83,9 @@ import com.android.purebilibili.core.coroutines.AppScope
 import com.android.purebilibili.core.theme.LocalDisplayMetricsSnapshot
 import com.android.purebilibili.core.theme.PureBiliBiliTheme
 import com.android.purebilibili.core.ui.blur.rememberRecoverableHazeState
+import com.android.purebilibili.core.ui.adaptive.DevicePerformanceClass
 import com.android.purebilibili.core.ui.adaptive.LocalDevicePerformanceClass
 import com.android.purebilibili.core.ui.motion.AppMotionEasing
-import com.android.purebilibili.core.performance.DevicePerformanceClass
 import com.android.purebilibili.core.performance.DevicePerformanceDetector
 import com.android.purebilibili.core.ui.performance.AppRuntimeVisualGuardTracker
 import com.android.purebilibili.core.ui.wallpaper.SplashWallpaperLayout

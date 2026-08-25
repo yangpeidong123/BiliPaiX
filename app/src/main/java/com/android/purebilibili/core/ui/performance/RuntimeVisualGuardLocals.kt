@@ -4,15 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.purebilibili.core.ui.LocalAppThemeConfig
 import com.android.purebilibili.core.ui.adaptive.DevicePerformanceClass
 import com.android.purebilibili.core.ui.adaptive.LocalDevicePerformanceClass
 import com.android.purebilibili.core.ui.adaptive.MotionTier
 import com.android.purebilibili.core.ui.adaptive.RuntimeVisualGuardDecision
+import com.android.purebilibili.core.ui.adaptive.applyMotionTierOverride
 import com.android.purebilibili.core.ui.adaptive.resolveDeviceUiProfile
+import com.android.purebilibili.core.store.motion.MotionTierOverride
+import com.android.purebilibili.core.store.motion.MotionTierOverrideStore
 import com.android.purebilibili.core.util.LocalWindowSizeClass
 import com.android.purebilibili.core.util.WindowWidthSizeClass
 
@@ -43,12 +48,18 @@ internal fun ProvideRuntimeVisualGuard(
 ) {
     // 设备基线档位只能在拿到 window metrics 之后才知道，而 Tracker 是进程单例、
     // 在 Activity 之前就已加载。放在组合根注入还能让折叠屏展开/分屏自动跟随。
-    LaunchedEffect(widthSizeClass, guardEnabled, performanceClass) {
+    val context = LocalContext.current
+    val motionTierOverride by MotionTierOverrideStore.observeOverride(context)
+        .collectAsStateWithLifecycle(initialValue = MotionTierOverride.Auto)
+    LaunchedEffect(widthSizeClass, guardEnabled, performanceClass, motionTierOverride) {
         AppRuntimeVisualGuardTracker.setBaseTier(
-            resolveDeviceUiProfile(
-                widthSizeClass = widthSizeClass,
-                performanceClass = performanceClass,
-            ).motionTier
+            applyMotionTierOverride(
+                baseTier = resolveDeviceUiProfile(
+                    widthSizeClass = widthSizeClass,
+                    performanceClass = performanceClass,
+                ).motionTier,
+                override = motionTierOverride,
+            )
         )
         AppRuntimeVisualGuardTracker.setEnabled(guardEnabled)
     }
