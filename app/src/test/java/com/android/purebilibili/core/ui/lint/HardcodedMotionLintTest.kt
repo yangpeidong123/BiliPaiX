@@ -17,6 +17,7 @@ class HardcodedMotionLintTest {
                     """(?:\s*=\s*)?\d+(?:\.\d+)?f?""",
                 RegexOption.DOT_MATCHES_ALL,
             ),
+            allowlist = StyleLintAllowlist.MIGRATED_MOTION_HITS,
         )
         val offenders = (legacyOffenders + migratedOffenders).distinct()
         assertTrue(

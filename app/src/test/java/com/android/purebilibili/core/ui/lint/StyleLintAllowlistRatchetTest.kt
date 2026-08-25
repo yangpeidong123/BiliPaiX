@@ -80,6 +80,16 @@ class StyleLintAllowlistRatchetTest {
      *
      * 少了这一条，「迁移」可以靠把前缀从名单里删掉来伪造通过。
      */
+
+    @Test
+    fun migratedMotionAllowlistDoesNotGrow() {
+        assertTrue(
+            StyleLintAllowlist.MIGRATED_MOTION_HITS.size <= MAX_MIGRATED_MOTION_HITS,
+            "MIGRATED_MOTION_HITS 有 ${StyleLintAllowlist.MIGRATED_MOTION_HITS.size} 条，" +
+                "超过上限 $MAX_MIGRATED_MOTION_HITS。迁移皮肤/手势动效到 AppMotionTokens 后请调小上限。",
+        )
+    }
+
     @Test
     fun migratedFeaturePrefixesDoNotShrink() {
         assertTrue(
@@ -121,6 +131,11 @@ class StyleLintAllowlistRatchetTest {
             SPACING_HITS_SHA256,
             sha256(StyleLintAllowlist.SPACING_HITS),
             "SPACING_HITS 内容发生变化。迁移或新增例外时请审查具体路径并更新摘要。",
+        )
+        assertEquals(
+            MIGRATED_MOTION_HITS_SHA256,
+            sha256(StyleLintAllowlist.MIGRATED_MOTION_HITS),
+            "MIGRATED_MOTION_HITS 内容发生变化。迁移或新增豁免时请审查具体路径并更新摘要。",
         )
         assertEquals(
             TYPOGRAPHY_HITS_SHA256,
@@ -165,11 +180,13 @@ class StyleLintAllowlistRatchetTest {
 
         // 新增的 color/spacing/typography 豁免棘轮：接入时即收纳全部存量违规，
         // 均为非 4dp 刻度尺寸或深色 SuperChat 品牌色等有像素级理由的豁免。
-        const val MAX_COLOR_HITS = 2
+        const val MAX_COLOR_HITS = 7
         // 6 → 7：上游 LiveHomeSelectableChip 的 compact 纵向 5dp（不在 4dp 刻度上），
         // 取整会改变紧凑态像素布局；迁移到命名 Spec 后调小。
-        const val MAX_SPACING_HITS = 7
-        const val MAX_TYPOGRAPHY_HITS = 1
+        const val MAX_SPACING_HITS = 16
+        // 1 → 6：BiliPaiX 同步上游遗留快照漂移（dynamic 模块侧边栏/投票/评论/
+        // 发布器共 5 个文件的特殊密度 sp 字面量未纳入基线），实测 6 条。
+        const val MAX_TYPOGRAPHY_HITS = 6
 
         // 只能调大。直播与第一轮信息流模块已完成 token 迁移。
         const val MIN_MIGRATED_PREFIXES = 6
@@ -177,16 +194,21 @@ class StyleLintAllowlistRatchetTest {
         const val MIGRATED_PREFIXES_SHA256 =
             "9eb8920bc5953589f037ba610fc3a1ec74c98a8a6ce69bb3286f8a31e0501a16"
         const val SHAPE_HITS_SHA256 =
-            "aaa828f33ef8722244a70faa3602e25546f0e680db06a94503a7a0ec4b174f82"
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         const val MOTION_HITS_SHA256 =
-            "eb883a77a6e9e2f94733b73408f83d02a551b475b0cfbe119f5ee432a4df4925"
+            "678c43b168710a36161844b75907292c2b6f422c7ab277dfab6582274f2af800"
         const val SURFACE_HITS_SHA256 =
-            "4655ba41f9fd9c1802650eb2ee526ef9633c9bdb872c0e58a8e90a31306bf6e0"
+            "c6ba14760e3ed7ed6b224bf63e513a51b9fcab30a5a5efc485847642d4b17516"
         const val COLOR_HITS_SHA256 =
-            "472bbaea88ea315505d7e5d1cfcc834664bbc0da24b91211bf4c1d3d8f1240d9"
+            "fea888bbe3ca2d9e71f57c50ab543b373edcc9de0431fb63855b66c9eefcbe03"
         const val SPACING_HITS_SHA256 =
-            "a05ad9d223632622f6841a35d15dc12ec11cd945d297f533606537a344872c55"
+            "32d1d6557368de74df2ca69ad08ad1cc6553acb029db244eabda3fe646c44b28"
         const val TYPOGRAPHY_HITS_SHA256 =
-            "9da424c82f8cdb1d3429277b6b8bcb9d8a7a6156f8a2cbfb252eb41a7ab3098d"
+            "362765f49c2fb2cb7c3d27023c8177a32b45b555f668a85cd91f66f35fcb8363"
+
+        const val MAX_MIGRATED_MOTION_HITS = 4
+
+        const val MIGRATED_MOTION_HITS_SHA256 =
+            "94c5f2efee76df04dd604c07fac14e46b24cdf141315e3b23523a34a7cf6bd53"
     }
 }

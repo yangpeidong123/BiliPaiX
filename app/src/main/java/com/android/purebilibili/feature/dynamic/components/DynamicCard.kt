@@ -626,7 +626,7 @@ fun DynamicCardV2(
                 val disputeColors = resolveAccessibleContainerColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    backgroundColor = AppSurfaceTokens.surface(),
                     fallbackContentColors = listOf(
                         MaterialTheme.colorScheme.onSurface,
                         MaterialTheme.colorScheme.onBackground,

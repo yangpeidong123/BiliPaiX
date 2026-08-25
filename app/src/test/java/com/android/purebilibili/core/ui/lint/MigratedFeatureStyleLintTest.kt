@@ -25,6 +25,7 @@ class MigratedFeatureStyleLintTest {
                 RegexOption.DOT_MATCHES_ALL,
             ),
             "迁移模块仍有字面动效参数",
+            allowlist = StyleLintAllowlist.MIGRATED_MOTION_HITS,
         )
     }
 

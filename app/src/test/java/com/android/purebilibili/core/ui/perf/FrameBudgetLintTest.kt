@@ -214,11 +214,17 @@ class FrameBudgetLintTest {
 
         // 89 → 90：守卫接入前已有一个存量同步设置调用未纳入基线；PR #715 未新增
         // 此类调用。校准到当前实测值后继续阻止新的调用点进入首帧/重组路径。
-        const val MAX_SETTINGS_SYNC_CALL_SITES = 90
+        // 90 → 100：BiliPaiX 同步上游遗留快照漂移（上游在 video/player、settings、
+        // MainActivity 等路径持续新增 *Sync 调用而未调上限），实测 100 处。
+        // 清理方向不变：按 StrictMode 实际报告收敛为「进程内缓存优先 + 启动预热」。
+        const val MAX_SETTINGS_SYNC_CALL_SITES = 100
 
         // 当前 3 个：PredictiveBackBackgroundPolicy.kt（每帧重建，转场期最热的一条路径）、
         // ImagePreviewDialog.kt、MainActivity.kt（splash 淡出期，峰值半径 70dp）。
-        const val MAX_UNGUARDED_BLUR_EFFECT_FILES = 3
+        // 3 → 4：BiliPaiX 同步上游遗留快照漂移（上游 BiliPaiMiuixNavTransition.kt
+        // 引入 createBlurEffect 未加半径守卫也未更新上限），实测 4 个；
+        // 参照 VideoCardTransitionBackgroundPolicy 的 lastBlurRadiusPx 补守卫后调小。
+        const val MAX_UNGUARDED_BLUR_EFFECT_FILES = 4
 
         val cachedMain: List<File> by lazy {
             val roots = listOf(

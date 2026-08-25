@@ -1627,7 +1627,7 @@ private fun LiveRedPocketChip(
     val chipColors = resolveAccessibleContainerColors(
         containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.94f),
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        backgroundColor = MaterialTheme.colorScheme.surface,
+        backgroundColor = AppSurfaceTokens.surface(),
         fallbackContentColors = listOf(
             MaterialTheme.colorScheme.onSurface,
             MaterialTheme.colorScheme.onBackground,

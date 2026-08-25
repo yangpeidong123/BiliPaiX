@@ -102,14 +102,17 @@ class PreferenceKeyUniquenessTest {
          * 冻结于 SettingsManager 拆分进行中的实测值：SettingsManager 与
          * PlayerSettingsStore / NavigationSettingsStore 之间的重叠。只能调小。
          * sidebar_account_switcher_enabled 为上一快照后既有新增项，本次一并纳入快照。
+         * miuix_transition_blur_enabled 为上游 NavigationSettingsStore 迁移时新增的重叠，
+         * 随快照收纳（BiliPaiX 同步上游遗留快照漂移）。
          */
-        const val MAX_DUPLICATED_KEYS = 10
+        const val MAX_DUPLICATED_KEYS = 11
 
         val EXPECTED_DUPLICATED_KEY_OWNERS = mapOf(
             "bottom_bar_order" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
             "bottom_bar_visible_tabs" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
             "default_playback_speed" to setOf("PlayerSettingsStore.kt", "SettingsManager.kt"),
             "last_playback_speed" to setOf("PlayerSettingsStore.kt", "SettingsManager.kt"),
+            "miuix_transition_blur_enabled" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
             "predictive_back_animation_style" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
             "predictive_back_enabled" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
             "predictive_back_exit_direction" to setOf("NavigationSettingsStore.kt", "SettingsManager.kt"),
