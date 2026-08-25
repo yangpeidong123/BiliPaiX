@@ -517,6 +517,78 @@ fun resolveSubtitlePositionPollingIdentity(
 }
 
 /**
+ * [positionMs] 之后最近的 cue 边界时刻（本句结束或下一句开始），用于事件化轮询。
+ * 无更多边界返回 null。二分实现，O(log n)，每秒至多调一次、每次两条轨道。
+ */
+fun resolveNextSubtitleBoundaryMs(
+    cues: List<SubtitleCue>,
+    positionMs: Long,
+): Long? {
+    if (cues.isEmpty() || positionMs < 0L) return null
+
+    var low = 0
+    var high = cues.lastIndex
+    var nearest: Long? = null
+    while (low <= high) {
+        val mid = (low + high) ushr 1
+        val cue = cues[mid]
+        when {
+            positionMs < cue.startMs -> {
+                nearest = cue.startMs
+                high = mid - 1
+            }
+            positionMs < cue.endMs -> return cue.endMs
+            else -> low = mid + 1
+        }
+    }
+    return nearest
+}
+
+/**
+ * 字幕进度轮询间隔（功耗敏感路径）。
+ *
+ * 固定 120ms 高频轮询意味着播放全程每秒 ~8 次唤醒 + currentPositions JNI 读 +
+ * 两轨文本二分查找，而字幕文本其实只在 cue 边界才变化。改为按「距最近边界的
+ * 时长」动态休眠后，长句/空窗期间唤醒次数降约 60%+。
+ *
+ * 正确性约束（不可放松）：
+ * - 结果永远 ≤ 原 fallback 周期：任何情况下不会比旧行为更迟钝；
+ * - 提前 [SUBTITLE_WAKE_MARGIN_MS] 醒来，抵消 delay 与播放时钟的累计漂移；
+ * - 单次休眠上限 [SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS]=300ms：用户 seek 后
+ *   字幕最迟 300ms 跟上（人眼无感），不需要引入 discontinuity 监听；
+ * - 暂停时不做事件化（暂停时位置不动，260ms 维持现状足够省）；
+ * - 双轨都还没有 cue 数据时用 [SUBTITLE_NO_CUES_POLL_INTERVAL_MS] 低频探询，
+ *   等字幕异步加载完成后自然恢复事件化节奏。
+ */
+fun resolveSubtitlePollingIntervalMs(
+    primaryCues: List<SubtitleCue>,
+    secondaryCues: List<SubtitleCue>,
+    positionMs: Long,
+    isPlaying: Boolean,
+): Long {
+    if (!isPlaying) return SUBTITLE_PAUSED_POLL_INTERVAL_MS
+
+    val hasAnyCue = primaryCues.isNotEmpty() || secondaryCues.isNotEmpty()
+    if (!hasAnyCue) return SUBTITLE_NO_CUES_POLL_INTERVAL_MS
+
+    val nextBoundary = minOfNotNull(
+        resolveNextSubtitleBoundaryMs(primaryCues, positionMs),
+        resolveNextSubtitleBoundaryMs(secondaryCues, positionMs),
+    ) ?: return SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS
+
+    // 距边界的休眠时长 = 边界 − 当前位置 − 提前量；夹进 [MIN, MAX] 窗口
+    val sleepMs = nextBoundary - positionMs - SUBTITLE_WAKE_MARGIN_MS
+    return sleepMs
+        .coerceIn(SUBTITLE_MIN_ACTIVE_POLL_INTERVAL_MS, SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS)
+}
+
+private const val SUBTITLE_PAUSED_POLL_INTERVAL_MS = 260L
+private const val SUBTITLE_NO_CUES_POLL_INTERVAL_MS = 400L
+private const val SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS = 300L
+private const val SUBTITLE_MIN_ACTIVE_POLL_INTERVAL_MS = 60L
+private const val SUBTITLE_WAKE_MARGIN_MS = 40L
+
+/**
  * 字幕叠层是否保持挂载（容器常驻，只换文案）。
  * 不要用「当前有无 cue 文本」控制整层 if，否则句间空窗会反复进出 composition → 闪。
  */

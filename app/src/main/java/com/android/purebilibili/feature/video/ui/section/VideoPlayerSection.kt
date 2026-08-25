@@ -419,6 +419,9 @@ private fun BoxScope.VideoSubtitleOverlayHost(
     }
     // Keep the fast playback-position read inside this restart scope so the player, video
     // surface and danmaku hosts are not recomposed on every subtitle tick.
+    // ⚡ [功耗] 事件化轮询：闭包经 rememberUpdatedState 读最新 cues（produceState
+    // 的 key 只有 player/identity，直接捕获 uiState 参数会永远读到旧值）。
+    val latestUiStateForSubtitlePolling by rememberUpdatedState(uiState)
     val subtitlePositionMs by produceState(
         initialValue = player.currentPosition.coerceAtLeast(0L),
         key1 = player,
@@ -427,7 +430,15 @@ private fun BoxScope.VideoSubtitleOverlayHost(
         value = player.currentPosition.coerceAtLeast(0L)
         while (isActive) {
             value = player.currentPosition.coerceAtLeast(0L)
-            delay(if (player.isPlaying) 120L else 260L)
+            val successForInterval = latestUiStateForSubtitlePolling as? VideoPlaybackUiState.Success
+            delay(
+                com.android.purebilibili.feature.video.subtitle.resolveSubtitlePollingIntervalMs(
+                    primaryCues = successForInterval?.subtitlePrimaryCues.orEmpty(),
+                    secondaryCues = successForInterval?.subtitleSecondaryCues.orEmpty(),
+                    positionMs = value,
+                    isPlaying = player.isPlaying,
+                )
+            )
         }
     }
     val subtitlePrimaryRawText = remember(
