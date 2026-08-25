@@ -26,6 +26,7 @@ import com.android.purebilibili.core.lifecycle.BackgroundManager
 import com.android.purebilibili.core.network.NetworkModule
 import com.android.purebilibili.core.network.WbiKeyManager
 import com.android.purebilibili.core.plugin.PluginManager
+import com.android.purebilibili.core.store.SettingsPreferencesWarmer
 import com.android.purebilibili.core.store.DEFAULT_ANALYTICS_ENABLED
 import com.android.purebilibili.core.store.DEFAULT_CRASH_TRACKING_ENABLED
 import com.android.purebilibili.core.store.SettingsManager
@@ -134,6 +135,9 @@ class PureApplication : Application(), ImageLoaderFactory, ComponentCallbacks2 {
         applyThemePreference()
         
         super.onCreate()
+        // ⚡ [*Sync 预热] 后台线程预载全部 SharedPreferences 文件：此后主线程上
+        // 103 处 SettingsManager.*Sync 调用全是内存快照读，不再有首读磁盘阻塞
+        SettingsPreferencesWarmer.warmAsync(this)
         launcherIconUiModeSnapshot = resources.configuration.uiMode
         Logger.init(this)
         CrashReporter.installGlobalExceptionHandler()
