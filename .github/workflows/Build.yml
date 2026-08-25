@@ -19,9 +19,11 @@ permissions:
   attestations: write
   id-token: write
 
-# Temporary distribution policy: GitHub mirrors source only; APKs are published in Telegram.
+# BiliPaiX distribution policy: APK artifacts are published to this repo's
+# Actions runs (FCM push is optional — google-services plugin applies only
+# when the config file exists).
 env:
-  GITHUB_APK_DISTRIBUTION_ENABLED: "false"
+  GITHUB_APK_DISTRIBUTION_ENABLED: "true"
 
 jobs:
   quality-guards:
@@ -84,7 +86,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [quality-guards, check-fcm]
-    if: needs.check-fcm.outputs.has_fcm == 'true'
+    # BiliPaiX 不依赖 FCM 推送：质量门禁通过即构建（google-services 插件仅在
+    # google-services.json 存在时才 apply，无 FCM secret 也能完整构建）
+    if: always() && needs.quality-guards.result == 'success'
     env:
       NATIVE_TARGET: "arm64-v8a"
     steps:
@@ -128,6 +132,7 @@ jobs:
           echo "gpr.key=${{ secrets.GPR_TOKEN }}" >> ~/.gradle/gradle.properties
         
       - name: Set Up FCM Config
+        if: ${{ secrets.FCM != '' }}
         run: |
           cd ./app
           echo "${{ secrets.FCM }}" | base64 -d > google-services.json
