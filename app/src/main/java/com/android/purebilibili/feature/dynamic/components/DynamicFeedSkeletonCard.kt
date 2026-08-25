@@ -43,6 +43,10 @@ private const val DYNAMIC_SKELETON_PULSE_DURATION_MILLIS = 900
  */
 @Composable
 internal fun rememberDynamicFeedSkeletonPulse(): Float {
+    // 省电模式门控：静态中点亮度，停掉每帧重绘的无限脉冲
+    if (!com.android.purebilibili.core.ui.skeleton.rememberSkeletonAnimationEnabled()) {
+        return com.android.purebilibili.core.ui.skeleton.SKELETON_STATIC_PULSE
+    }
     val transition = rememberInfiniteTransition(label = "dynamicFeedSkeletonPulse")
     val pulse by transition.animateFloat(
         initialValue = 0f,

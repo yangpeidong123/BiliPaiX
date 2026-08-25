@@ -49,6 +49,10 @@ import com.android.purebilibili.core.ui.ContainerLevel
 
 @Composable
 fun rememberContentSkeletonPulse(): Float {
+    // 省电模式门控：静态中点亮度，停掉每帧重绘的无限脉冲
+    if (!rememberSkeletonAnimationEnabled()) {
+        return SKELETON_STATIC_PULSE
+    }
     val transition = rememberInfiniteTransition(label = "contentSkeletonPulse")
     val pulse by transition.animateFloat(
         initialValue = 0f,

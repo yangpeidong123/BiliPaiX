@@ -31,9 +31,20 @@ import com.android.purebilibili.core.theme.LocalAppUiStyle
 
 /**
  * 骨架屏闪光特效 Modifier（深浅色主题自适应）。
+ * 省电模式自动降级为静态底色（无动画、零重绘）。
  */
 fun Modifier.shimmerEffect(): Modifier = composed {
     var size by remember { mutableStateOf(IntSize.Zero) }
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val base = if (isDark) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    }
+    // 省电模式门控：静态 base 底色，停掉无限扫光
+    if (!com.android.purebilibili.core.ui.skeleton.rememberSkeletonAnimationEnabled()) {
+        return@composed this.background(base)
+    }
     val transition = rememberInfiniteTransition(label = "shimmer")
     val startOffsetX by transition.animateFloat(
         initialValue = -2 * size.width.toFloat(),
@@ -43,12 +54,6 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         ),
         label = "shimmer_offset"
     )
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-    val base = if (isDark) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-    }
     val highlight = if (isDark) {
         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
     } else {
