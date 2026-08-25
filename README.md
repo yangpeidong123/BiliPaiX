@@ -56,6 +56,8 @@
 | 架构 | `ApiClient.kt` 从 3106 行拆分为 12 个按域接口文件（BilibiliApi / DynamicApi / BangumiApi / PassportApi / SearchApi / SpaceApi / MessageApi / BuvidApi / SplashApi / ArticleApi / StoryApi / AudioApi） | 网络层职责边界清晰，单人维护或多人并行更易上手 |
 | 架构 | 删除无实现无引用的空壳文件 `app/di.kt`、`core/network/Interceptors.kt` | 消除误导性入口，减少困惑 |
 | 质量 | 修正 instrumented 测试 17 个文件的错误包名 `com.Android.*` → `com.android.*` | 包名规范统一，符合 Kotlin 与 Android 惯例 |
+| 质量 | 修复上游遗留的测试编译错误：删除引用已移除函数的过时测试、补缺失 import、同步 `SettingsManagerSizeRatchetTest` 棘轮上限（6714→7386） | 单元测试可编译，质量门禁恢复有效 |
+| 质量 | 同步上游遗留的质量棘轮快照漂移：白名单收纳存量硬编码颜色/间距/字号/动效参数，重算全部 SHA256 快照摘要，校准 FrameBudget 与 PreferenceKey 上限；`DynamicCard`/`LivePlayerScreen` 的 surface 读取真实迁移到 `AppSurfaceTokens` | 上游自接入起即为红的 10 个 lint 门禁全部转绿，棘轮「只拦新增」语义保留 |
 | 构建 | 修复 GitHub Actions 对 miuix GitHub Packages 的 401 认证（新增 `GPR_TOKEN` secret 注入） | 新仓库 CI 可完整编译验证 |
 | 文档 | 重写本 README，明确分支定位与改动清单 | 新用户/开发者快速理解差异 |
 
