@@ -91,6 +91,7 @@ jobs:
     if: always() && needs.quality-guards.result == 'success'
     env:
       NATIVE_TARGET: "arm64-v8a"
+      FCM_CONFIG_B64: ${{ secrets.FCM }}
     steps:
       - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
@@ -132,7 +133,7 @@ jobs:
           echo "gpr.key=${{ secrets.GPR_TOKEN }}" >> ~/.gradle/gradle.properties
         
       - name: Set Up FCM Config
-        if: ${{ secrets.FCM != '' }}
+        if: env.FCM_CONFIG_B64 != ''
         run: |
           cd ./app
           echo "${{ secrets.FCM }}" | base64 -d > google-services.json
