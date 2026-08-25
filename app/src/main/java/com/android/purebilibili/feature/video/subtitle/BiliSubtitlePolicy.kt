@@ -571,10 +571,10 @@ fun resolveSubtitlePollingIntervalMs(
     val hasAnyCue = primaryCues.isNotEmpty() || secondaryCues.isNotEmpty()
     if (!hasAnyCue) return SUBTITLE_NO_CUES_POLL_INTERVAL_MS
 
-    val nextBoundary = minOfNotNull(
+    val nextBoundary = listOfNotNull(
         resolveNextSubtitleBoundaryMs(primaryCues, positionMs),
         resolveNextSubtitleBoundaryMs(secondaryCues, positionMs),
-    ) ?: return SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS
+    ).minOrNull() ?: return SUBTITLE_MAX_ACTIVE_POLL_INTERVAL_MS
 
     // 距边界的休眠时长 = 边界 − 当前位置 − 提前量；夹进 [MIN, MAX] 窗口
     val sleepMs = nextBoundary - positionMs - SUBTITLE_WAKE_MARGIN_MS
