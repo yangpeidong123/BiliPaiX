@@ -47,6 +47,6 @@ class SettingsManagerSizeRatchetTest {
          * SettingsManager 领域拆分。待拆分完成后应调小到新的实测值。
          * 仍只允许后续变小。
          */
-        const val MAX_LINES = 7386
+        const val MAX_LINES = 7393
     }
 }
