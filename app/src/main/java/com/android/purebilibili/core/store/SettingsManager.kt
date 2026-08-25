@@ -1030,7 +1030,7 @@ data class PlayerInteractionSettings(
      */
     val autoExitFullscreenMode: AutoExitFullscreenMode = AutoExitFullscreenMode.ALL_PARTS,
     val fixedFullscreenAspectRatio: FullscreenAspectRatio = FullscreenAspectRatio.FIT,
-    val subtitleAutoPreference: SubtitleAutoPreference = SubtitleAutoPreference.OFF,
+    val subtitleAutoPreference: SubtitleAutoPreference = SubtitleAutoPreference.WITHOUT_AI,
     val longPressSpeed: Float = 2.0f,
     val longPressSpeedLockEnabled: Boolean = false,
     val longPressSpeedLockHintShown: Boolean = false,
@@ -1739,8 +1739,8 @@ object SettingsManager {
                 preferences[KEY_FULLSCREEN_ASPECT_RATIO] ?: FullscreenAspectRatio.FIT.value
             ),
             subtitleAutoPreference = SubtitleAutoPreference.entries.getOrElse(
-                preferences[KEY_SUBTITLE_AUTO_PREFERENCE] ?: SubtitleAutoPreference.OFF.ordinal
-            ) { SubtitleAutoPreference.OFF },
+                preferences[KEY_SUBTITLE_AUTO_PREFERENCE] ?: DEFAULT_SUBTITLE_AUTO_PREFERENCE.ordinal
+            ) { DEFAULT_SUBTITLE_AUTO_PREFERENCE },
             longPressSpeed = normalizeLongPressSpeed(
                 preferences[KEY_LONG_PRESS_SPEED] ?: DEFAULT_LONG_PRESS_SPEED
             ),
@@ -6155,6 +6155,12 @@ object SettingsManager {
     private val KEY_QUALITY_SWITCH_FAILURE_DIALOG_SHOWN =
         booleanPreferencesKey("quality_switch_failure_dialog_shown")
     private val KEY_SUBTITLE_AUTO_PREFERENCE = intPreferencesKey("subtitle_auto_preference")
+
+    /**
+     * 字幕自动开启的出厂默认：有 CC（人工）字幕就显示，AI 字幕不主动弹。
+     * 改默认值只影响「从未写入该 key」的用户——手动选过的保留自己的选择。
+     */
+    private val DEFAULT_SUBTITLE_AUTO_PREFERENCE = SubtitleAutoPreference.WITHOUT_AI
     private val KEY_BOTTOM_PROGRESS_BEHAVIOR = intPreferencesKey("bottom_progress_behavior")
     private val KEY_PROGRESS_PEAK_DANMAKU_ENABLED =
         booleanPreferencesKey("progress_peak_danmaku_enabled")
@@ -6597,8 +6603,9 @@ object SettingsManager {
 
     fun getSubtitleAutoPreference(context: Context): Flow<SubtitleAutoPreference> =
         context.settingsDataStore.data.map { preferences ->
-            val raw = preferences[KEY_SUBTITLE_AUTO_PREFERENCE] ?: SubtitleAutoPreference.OFF.ordinal
-            SubtitleAutoPreference.entries.getOrElse(raw) { SubtitleAutoPreference.OFF }
+            val raw = preferences[KEY_SUBTITLE_AUTO_PREFERENCE]
+                ?: DEFAULT_SUBTITLE_AUTO_PREFERENCE.ordinal
+            SubtitleAutoPreference.entries.getOrElse(raw) { DEFAULT_SUBTITLE_AUTO_PREFERENCE }
         }
 
     suspend fun setSubtitleAutoPreference(context: Context, preference: SubtitleAutoPreference) {

@@ -1744,7 +1744,7 @@ private fun VideoPageItem(
     }
     val subtitleAutoPreference by SettingsManager
         .getSubtitleAutoPreference(context)
-        .collectAsStateWithLifecycle(initialValue = SubtitleAutoPreference.OFF)
+        .collectAsStateWithLifecycle(initialValue = SubtitleAutoPreference.WITHOUT_AI)
     var keepPortraitPagerAwake by remember(exoPlayer) {
         mutableStateOf(
             shouldKeepVideoPlaybackAwake(

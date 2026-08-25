@@ -1122,7 +1122,7 @@ private fun PlaybackInteractionSettingsSection(
     val subtitleFeatureEnabled = isSubtitleFeatureEnabledForUser()
     val subtitleAutoPreference by com.android.purebilibili.core.store.SettingsManager
         .getSubtitleAutoPreference(context)
-        .collectAsStateWithLifecycle(initialValue = SubtitleAutoPreference.OFF)
+        .collectAsStateWithLifecycle(initialValue = SubtitleAutoPreference.WITHOUT_AI)
     val videoAiSummaryEntryEnabled by com.android.purebilibili.core.store.SettingsManager
         .getVideoAiSummaryEntryEnabled(context)
         .collectAsStateWithLifecycle(initialValue = true)

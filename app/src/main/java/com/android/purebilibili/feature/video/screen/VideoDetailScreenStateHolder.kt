@@ -1919,7 +1919,7 @@ internal fun VideoDetailScreenStateHolder(
     val subtitleAutoPreference by com.android.purebilibili.core.store.SettingsManager
         .getSubtitleAutoPreference(context)
         .collectAsStateWithLifecycle(
-            initialValue = SubtitleAutoPreference.OFF,
+            initialValue = SubtitleAutoPreference.WITHOUT_AI,
             lifecycle = lifecycleOwner.lifecycle
         )
     val subtitleAudioManager = remember {
